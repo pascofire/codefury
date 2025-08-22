@@ -12,12 +12,21 @@ import androidx.core.graphics.Insets;
 import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowInsetsCompat;
 
+import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.Task;
+import androidx.annotation.NonNull;
+import com.google.firebase.auth.AuthResult;
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
+
 public class MainActivity extends AppCompatActivity {
 
     private EditText editTextEmailAddress;
     private EditText editTextPhone;
     private EditText editTextTextPassword;
     private Button submitButton;
+    FirebaseAuth mAuth;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -29,17 +38,27 @@ public class MainActivity extends AppCompatActivity {
         editTextPhone = findViewById(R.id.editTextPhone);
         editTextTextPassword = findViewById(R.id.editTextTextPassword);
         submitButton = findViewById(R.id.submit);
+        mAuth = FirebaseAuth.getInstance();
 
         submitButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Toast.makeText(MainActivity.this, "Submit clicked", Toast.LENGTH_SHORT).show();
+                String email = editTextEmailAddress.getText().toString();
+                String password = editTextTextPassword.getText().toString();
+                mAuth.signInWithEmailAndPassword(email, password)
+                        .addOnCompleteListener(MainActivity.this, task -> {
+                            if (task.isSuccessful()) {
+                                Toast.makeText(MainActivity.this, "signed in!", Toast.LENGTH_SHORT).show();
+                            } else {
+                                Toast.makeText(MainActivity.this, "login failed", Toast.LENGTH_SHORT).show();
+                            }
+                        });
             }
         });
 
-        ViewCompat.setOnApplyWindowInsetsListener(findViewById(R.id.main), (v, insets) -> {
+        ViewCompat.setOnApplyWindowInsetsListener(findViewById(R.id.main), (view, insets) -> {
             Insets systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars());
-            v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom);
+            view.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom);
             return insets;
         });
     }
