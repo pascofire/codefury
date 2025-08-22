@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "632497065862",
+    "project_id": "codefury-000000",
+    "storage_bucket": "codefury-000000.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:632497065862:android:4fe9f0d7dc486c74c52607",
+        "android_client_info": {
+          "package_name": "com.gd.codefury"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAswMRU2u_GUQkGEEzV06tOeNPRm-GNP04"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
