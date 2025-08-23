@@ -1,10 +1,15 @@
 package com.gd.codefury;
 
+import android.app.Activity;
 import android.content.Context;
+import android.content.Intent;
+import android.net.Uri;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageButton;
 import android.widget.ImageView;
+import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
@@ -15,12 +20,11 @@ import java.util.ArrayList;
 
 public class ImageAdapter extends RecyclerView.Adapter<ImageAdapter.ImageViewHolder> {
 
-
-    private final ArrayList<String> imageUrls;
+    private final ArrayList<Image> imageList;
     private final Context context;
 
-    public ImageAdapter(ArrayList<String> imageUrls, Context context) {
-        this.imageUrls = imageUrls;
+    public ImageAdapter(ArrayList<Image> imageList, Context context) {
+        this.imageList = imageList;
         this.context = context;
     }
 
@@ -33,21 +37,47 @@ public class ImageAdapter extends RecyclerView.Adapter<ImageAdapter.ImageViewHol
 
     @Override
     public void onBindViewHolder(@NonNull ImageViewHolder holder, int position) {
-        String url = imageUrls.get(position);
-        Glide.with(context).load(url).into(holder.imageView);
+        Image item = imageList.get(position);
+
+        // Load image
+        Glide.with(context).load(item.getImageUrl()).into(holder.imageView);
+
+        // Set text fields
+        holder.title.setText(item.getTitle());
+        holder.description.setText(item.getDescription());
+        holder.link.setText(item.getLink());
+
+        // Link opens in browser
+        holder.link.setOnClickListener(v -> {
+            Intent browserIntent = new Intent(Intent.ACTION_VIEW, Uri.parse(item.getLink()));
+            context.startActivity(browserIntent);
+        });
+
+        // Back button finishes the activity
+        holder.backButton.setOnClickListener(v -> {
+            if (context instanceof Activity) {
+                ((Activity) context).finish();
+            }
+        });
     }
 
     @Override
     public int getItemCount() {
-        return imageUrls.size();
+        return imageList.size();
     }
 
     static class ImageViewHolder extends RecyclerView.ViewHolder {
+        ImageButton backButton;
         ImageView imageView;
+        TextView title, description, link;
 
         public ImageViewHolder(@NonNull View itemView) {
             super(itemView);
+            backButton = itemView.findViewById(R.id.backbutton);
             imageView = itemView.findViewById(R.id.image_item_view);
+            title = itemView.findViewById(R.id.title_ia);
+            description = itemView.findViewById(R.id.description_ia);
+            link = itemView.findViewById(R.id.link_ia);
         }
     }
 }

@@ -18,7 +18,6 @@ import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowInsetsCompat;
 
 import com.google.firebase.auth.FirebaseAuth;
-import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
@@ -36,7 +35,7 @@ public class UploadImage extends AppCompatActivity {
     private CheckBox product;
     private Button publish;
 
-    private Uri imageUri; // You will get this from gallery/camera intent
+    private Uri imageUri; //to upload local image file to firebase firestore
     private FirebaseAuth mAuth;
     private FirebaseFirestore db;
     private StorageReference storageRef;
@@ -54,10 +53,10 @@ public class UploadImage extends AppCompatActivity {
 
         ImageButton backButton = findViewById(R.id.backbutton);
         backButton.setOnClickListener(v -> {
-            // Go back to UserProfile activity
+
             Intent intent1 = new Intent(UploadImage.this, UserProfile.class);
             startActivity(intent1);
-            finish(); // optional, if you want to remove UploadImage from back stack
+            finish(); //to remove UploadImage
         });
         Title = findViewById(R.id.titlefield);
         Description = findViewById(R.id.description);
@@ -155,7 +154,7 @@ public class UploadImage extends AppCompatActivity {
                 .show();
     }
 
-    // You need to add code to open gallery and set imageUri
+
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);

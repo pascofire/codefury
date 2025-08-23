@@ -33,7 +33,8 @@ public class UserProfile extends AppCompatActivity {
     private FirebaseFirestore db;
     private StorageReference storageRef;
 
-    private ArrayList<String> imageUrls;
+    private ArrayList<Image> imageList;
+
     private ImageAdapter imageAdapter;
 
     @Override
@@ -70,8 +71,9 @@ public class UserProfile extends AppCompatActivity {
         });
 
         // Setup RecyclerView with Staggered Grid
-        imageUrls = new ArrayList<>();
-        imageAdapter = new ImageAdapter(imageUrls, this);
+        imageList = new ArrayList<>();
+        imageAdapter = new ImageAdapter(imageList, this);
+
         StaggeredGridLayoutManager layoutManager = new StaggeredGridLayoutManager(2, StaggeredGridLayoutManager.VERTICAL);
         imageRecyclerView.setLayoutManager(layoutManager);
         imageRecyclerView.setAdapter(imageAdapter);
@@ -90,10 +92,10 @@ public class UserProfile extends AppCompatActivity {
                 .collection("images")
                 .get()
                 .addOnSuccessListener(queryDocumentSnapshots -> {
-                    imageUrls.clear();
+                    imageList.clear();
                     for (QueryDocumentSnapshot doc : queryDocumentSnapshots) {
-                        String url = doc.getString("imageUrl");
-                        if (url != null) imageUrls.add(url);
+                        Image item = doc.toObject(Image.class);
+                        imageList.add(item);
                     }
                     imageAdapter.notifyDataSetChanged();
                 })
@@ -101,4 +103,5 @@ public class UserProfile extends AppCompatActivity {
                         Toast.makeText(UserProfile.this, "Failed to load images: " + e.getMessage(), Toast.LENGTH_SHORT).show()
                 );
     }
+
 }
