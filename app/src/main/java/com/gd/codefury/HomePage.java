@@ -38,7 +38,7 @@ public class HomePage extends AppCompatActivity {
         userprofilepicture=findViewById(R.id.userprofilepicture);
         userprofilepicture.setOnClickListener(v -> {
             startActivity(new Intent(HomePage.this, UserProfile.class));
-            finish();
+
         });
 
         // Handle system bar insets

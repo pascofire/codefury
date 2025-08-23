@@ -1,7 +1,7 @@
 package com.gd.codefury;
 
 public class Image {
-    private String imageUrl;
+    private String image;
     private String title;
     private String description;
     private String link;
@@ -10,15 +10,15 @@ public class Image {
     // Required empty constructor for Firestore
     public Image() {}
 
-    public Image(String imageUrl, String title, String description, String link, String user) {
-        this.imageUrl = imageUrl;
+    public Image(String image, String title, String description, String link, String user) {
+        this.image = image;
         this.title = title;
         this.description = description;
         this.link = link;
         this.user = user;
     }
 
-    public String getImageUrl() { return imageUrl; }
+    public String getImage() { return image; }
     public String getTitle() { return title; }
     public String getDescription() { return description; }
     public String getLink() { return link; }

@@ -37,8 +37,8 @@ public class ImageAdapter extends RecyclerView.Adapter<ImageAdapter.ImageViewHol
     public void onBindViewHolder(@NonNull ImageViewHolder holder, int position) {
         Image item = imageList.get(position);
 
-
-        String base64Image = item.getImageUrl();
+ //converter image to bitmap
+        String base64Image = item.getImage();
         if (base64Image != null && !base64Image.isEmpty()) {
             byte[] decodedBytes = Base64.decode(base64Image, Base64.DEFAULT);
             Bitmap bitmap = BitmapFactory.decodeByteArray(decodedBytes, 0, decodedBytes.length);
@@ -51,14 +51,16 @@ public class ImageAdapter extends RecyclerView.Adapter<ImageAdapter.ImageViewHol
         holder.link.setText(item.getLink());
 
         // When clicked → open ImageDetailActivity
+        // When clicked → open ImageDetailActivity
         holder.itemView.setOnClickListener(v -> {
-            Intent intent = new Intent(context, ImageDetailActivity.class);
-            intent.putExtra("imageBase64", item.getImageUrl()); // pass Base64
+            Intent intent = new Intent(v.getContext(), ImageDetailActivity.class);
+            intent.putExtra("imageBase64", item.getImage()); // pass Base64
             intent.putExtra("title", item.getTitle());
             intent.putExtra("description", item.getDescription());
             intent.putExtra("link", item.getLink());
-            context.startActivity(intent);
+            v.getContext().startActivity(intent);  // ✅ correct context
         });
+
     }
 
     @Override

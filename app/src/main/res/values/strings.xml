@@ -9,4 +9,16 @@
     <string name="invalid_username">Not a valid username</string>
     <string name="invalid_password">Password must be >5 characters</string>
     <string name="login_failed">"Login failed"</string>
+
+    <!-- Signup Page Strings -->
+    <string name="email_required_error">Email is required.</string>
+    <string name="invalid_email_error">Please enter a valid email address.</string>
+    <string name="password_required_error">Password is required.</string>
+    <string name="password_too_short_error">Password must be at least 6 characters.</string>
+    <string name="confirm_password_error">Confirm Password is required.</string>
+    <string name="password_mismatch_error">Passwords do not match.</string>
+    <string name="signup_successful_toast">Account created successfully for </string>
+    <string name="signup_failed_toast">Authentication failed</string>
+    <string name="title_activity_signup">Sign Up</string> <!-- For the activity label -->
+
 </resources>

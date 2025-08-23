@@ -63,14 +63,10 @@ public class UserProfile extends AppCompatActivity {
         // Upload button → open upload screen
         upload.setOnClickListener(v -> {
             startActivity(new Intent(UserProfile.this, UploadImage.class));
-            finish();
         });
 
         // Back button → return to homepage
-        backButton.setOnClickListener(v -> {
-            startActivity(new Intent(UserProfile.this, HomePage.class));
-            finish();
-        });
+        backButton.setOnClickListener(v -> finish());
 
         // Setup RecyclerView
         imageList = new ArrayList<>();
@@ -97,7 +93,7 @@ public class UserProfile extends AppCompatActivity {
                     imageList.clear();
                     for (QueryDocumentSnapshot doc : queryDocumentSnapshots) {
                         Image item = new Image(
-                                doc.getString("imageUrl"),
+                                doc.getString("image"),
                                 doc.getString("title"),
                                 doc.getString("description"),
                                 doc.getString("link"),

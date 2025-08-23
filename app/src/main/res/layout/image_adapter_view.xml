@@ -6,14 +6,6 @@
     android:orientation="vertical"
     android:padding="8dp">
 
-    <ImageButton
-        android:id="@+id/backbutton"
-        android:layout_width="50dp"
-        android:layout_height="50dp"
-        android:layout_margin="16dp"
-        android:contentDescription="@android:string/cancel"
-        android:padding="16dp"
-        app:srcCompat="?attr/homeAsUpIndicator" />
     <ImageView
         android:id="@+id/image_item_view"
         android:layout_width="match_parent"

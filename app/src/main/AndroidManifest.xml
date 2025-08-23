@@ -11,31 +11,46 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/Theme.Codefury">
+
+        <!-- ... other activities ... -->
         <activity
             android:name=".HomePage"
             android:exported="false" />
-        <activity
-            android:name=".ImageAdapter"
-            android:exported="false" />
+
         <activity
             android:name=".UploadImage"
             android:exported="false" />
+
         <activity
             android:name=".UserProfile"
             android:exported="false" />
+
         <activity
             android:name=".LoginPage"
-            android:exported="false" />
+            android:exported="false" />  <!-- Assuming LoginPage is not the launcher for now -->
+                                        <!-- If LoginPage should be the launcher, set exported="true" and add intent filter -->
+
         <activity
-            android:name=".ui.login.LoginActivity"
+            android:name=".ImageDetailActivity"
+            android:exported="false" />
+
+        <activity
+            android:name=".SignupActivity"
             android:exported="false"
-            android:label="@string/title_activity_login" />
+            android:label="@string/title_activity_signup" />
+            <!-- You might want to make this launchable or open it from LoginPage -->
+            <!-- If you want to launch it directly for testing, set exported="true" and add:
+                 <intent-filter>
+                     <action android:name="android.intent.action.MAIN" />
+                     <category android:name="android.intent.category.LAUNCHER" />
+                 </intent-filter>
+            -->
+
         <activity
             android:name=".MainActivity"
             android:exported="true">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
-
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>

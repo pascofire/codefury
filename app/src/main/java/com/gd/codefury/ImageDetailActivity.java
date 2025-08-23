@@ -21,42 +21,36 @@ public class ImageDetailActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.image_adapter_view); // ✅ reuse your layout
+        setContentView(R.layout.activity_image_detail);
 
-        // Init views
-        imageView = findViewById(R.id.image_item_view);
-        title = findViewById(R.id.title_ia);
-        description = findViewById(R.id.description_ia);
-        link = findViewById(R.id.link_ia);
-        backButton = findViewById(R.id.backbutton);
+        imageView = findViewById(R.id.detail_image);
+        title = findViewById(R.id.detail_title);
+        description = findViewById(R.id.detail_description);
+        link = findViewById(R.id.detail_link);
+        backButton = findViewById(R.id.detail_backbutton);
 
-        // Get data from intent
-        String base64Image = getIntent().getStringExtra("imageBase64"); // ✅ now Base64
+        String base64Image = getIntent().getStringExtra("imageBase64");
         String titleText = getIntent().getStringExtra("title");
         String descriptionText = getIntent().getStringExtra("description");
         String linkUrl = getIntent().getStringExtra("link");
 
-        // Decode Base64 → Bitmap
         if (base64Image != null && !base64Image.isEmpty()) {
             byte[] decodedBytes = Base64.decode(base64Image, Base64.DEFAULT);
             Bitmap bitmap = BitmapFactory.decodeByteArray(decodedBytes, 0, decodedBytes.length);
             imageView.setImageBitmap(bitmap);
         }
 
-        // Set text
         title.setText(titleText);
         description.setText(descriptionText);
         link.setText(linkUrl);
 
-        // Open link in browser
+        backButton.setOnClickListener(v -> finish());
+
         link.setOnClickListener(v -> {
             if (linkUrl != null && !linkUrl.isEmpty()) {
-                Intent browserIntent = new Intent(Intent.ACTION_VIEW, Uri.parse(linkUrl));
-                startActivity(browserIntent);
+                startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse(linkUrl)));
             }
         });
-
-        // Back button → finish
-        backButton.setOnClickListener(v -> finish());
     }
 }
+
