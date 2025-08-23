@@ -12,6 +12,9 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.Codefury">
         <activity
+            android:name=".ImageAdapter"
+            android:exported="false" />
+        <activity
             android:name=".UploadImage"
             android:exported="false" />
         <activity

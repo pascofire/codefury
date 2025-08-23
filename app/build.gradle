@@ -48,8 +48,12 @@ dependencies {
     testImplementation libs.junit
     androidTestImplementation libs.ext.junit
     androidTestImplementation libs.espresso.core
+
     implementation platform(libs.firebase.bom)
     implementation(libs.firebase.database)
+    implementation libs.firebase.auth.v2212
+    implementation libs.firebase.firestore
+    implementation libs.firebase.storage.v2030
 
 
 }
