@@ -24,11 +24,10 @@
         android:id="@+id/userprofilepicture"
         android:layout_width="40dp"
         android:layout_height="40dp"
-        android:background="@android:color/transparent"
         android:contentDescription="@string/action_sign_in"
+        app:srcCompat="@drawable/icon"
+        android:background="@android:color/transparent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        app:srcCompat="@drawable/ic_launcher_foreground"
-        tools:srcCompat="@tools:sample/avatars" />
+        app:layout_constraintTop_toTopOf="parent"/>
 
 </androidx.constraintlayout.widget.ConstraintLayout>

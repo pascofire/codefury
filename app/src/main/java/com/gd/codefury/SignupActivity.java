@@ -120,6 +120,7 @@ public class SignupActivity extends AppCompatActivity {
                             Log.d(TAG, "createUserWithEmail:success");
                             FirebaseUser user = mAuth.getCurrentUser();
                             Toast.makeText(SignupActivity.this, getString(R.string.signup_successful_toast) + (user != null ? user.getEmail() : ""), Toast.LENGTH_LONG).show();
+                            Intent intent = new Intent(SignupActivity.this, HomePage.class);
 
                         } else {
                             Log.w(TAG, "createUserWithEmail:failure", task.getException());
