@@ -5,6 +5,7 @@ import android.net.Uri;
 import android.os.Bundle;
 import android.widget.EditText;
 import android.widget.ImageButton;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
@@ -24,7 +25,7 @@ import java.util.ArrayList;
 
 public class UserProfile extends AppCompatActivity {
 
-    private EditText username;
+    private TextView username;
     private ImageButton backButton;
     private RecyclerView imageRecyclerView;
 

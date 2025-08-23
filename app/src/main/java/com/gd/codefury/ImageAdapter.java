@@ -15,8 +15,9 @@ import java.util.ArrayList;
 
 public class ImageAdapter extends RecyclerView.Adapter<ImageAdapter.ImageViewHolder> {
 
-    private ArrayList<String> imageUrls;
-    private Context context;
+
+    private final ArrayList<String> imageUrls;
+    private final Context context;
 
     public ImageAdapter(ArrayList<String> imageUrls, Context context) {
         this.imageUrls = imageUrls;

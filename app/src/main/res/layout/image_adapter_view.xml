@@ -1,15 +1,43 @@
 <?xml version="1.0" encoding="utf-8"?>
-<?xml version="1.0" encoding="utf-8"?>
-<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:layout_margin="4dp">
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:orientation="vertical"
+    android:padding="8dp">
 
+    <ImageButton
+        android:id="@+id/backbutton"
+        android:layout_width="50dp"
+        android:layout_height="50dp"
+        android:layout_margin="16dp"
+        android:contentDescription="@android:string/cancel"
+        android:padding="16dp"
+        app:srcCompat="?attr/homeAsUpIndicator" />
     <ImageView
         android:id="@+id/image_item_view"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:adjustViewBounds="true"
-        android:scaleType="centerCrop" />
+        android:layout_height="371dp"
+        android:scaleType="centerCrop"
+        android:src="@drawable/ic_launcher_foreground" />
 
-</FrameLayout>
+    <TextView
+        android:id="@+id/title_ia"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Title"
+        android:textSize="18dp"
+        android:layout_marginTop="8dp"/>
+
+    <TextView
+        android:id="@+id/description_ia"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Description" />
+
+    <TextView
+        android:id="@+id/link_ia"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Link" />
+</LinearLayout>
