@@ -39,27 +39,20 @@ public class ImageAdapter extends RecyclerView.Adapter<ImageAdapter.ImageViewHol
     public void onBindViewHolder(@NonNull ImageViewHolder holder, int position) {
         Image item = imageList.get(position);
 
-        // Load image
+        // Load just the image thumbnail
         Glide.with(context).load(item.getImageUrl()).into(holder.imageView);
 
-        // Set text fields
-        holder.title.setText(item.getTitle());
-        holder.description.setText(item.getDescription());
-        holder.link.setText(item.getLink());
-
-        // Link opens in browser
-        holder.link.setOnClickListener(v -> {
-            Intent browserIntent = new Intent(Intent.ACTION_VIEW, Uri.parse(item.getLink()));
-            context.startActivity(browserIntent);
-        });
-
-        // Back button finishes the activity
-        holder.backButton.setOnClickListener(v -> {
-            if (context instanceof Activity) {
-                ((Activity) context).finish();
-            }
+        // When clicked → open ImageDetailActivity
+        holder.itemView.setOnClickListener(v -> {
+            Intent intent = new Intent(context, ImageDetailActivity.class);
+            intent.putExtra("imageUrl", item.getImageUrl());
+            intent.putExtra("title", item.getTitle());
+            intent.putExtra("description", item.getDescription());
+            intent.putExtra("link", item.getLink());
+            context.startActivity(intent);
         });
     }
+
 
     @Override
     public int getItemCount() {

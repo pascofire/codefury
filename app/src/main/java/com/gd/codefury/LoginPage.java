@@ -1,5 +1,6 @@
 package com.gd.codefury;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
@@ -49,6 +50,8 @@ public class LoginPage extends AppCompatActivity {
                         .addOnCompleteListener(LoginPage.this, task -> {
                             if (task.isSuccessful()) {
                                 Toast.makeText(LoginPage.this, "signed in!", Toast.LENGTH_SHORT).show();
+                                    startActivity(new Intent(LoginPage.this, HomePage.class));
+                                    finish();
                             } else {
                                 Toast.makeText(LoginPage.this, "login failed", Toast.LENGTH_SHORT).show();
                             }
