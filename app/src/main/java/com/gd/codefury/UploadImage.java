@@ -1,165 +1,150 @@
 package com.gd.codefury;
 
-import android.app.ProgressDialog;
 import android.content.Intent;
+import android.graphics.Bitmap;
 import android.net.Uri;
 import android.os.Bundle;
+import android.provider.MediaStore;
+import android.util.Base64;
 import android.widget.Button;
 import android.widget.CheckBox;
 import android.widget.EditText;
-import android.widget.Toast;
 import android.widget.ImageButton;
+import android.widget.ImageView;
+import android.widget.Toast;
 
-import androidx.activity.EdgeToEdge;
-import androidx.appcompat.app.AlertDialog;
+import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.core.graphics.Insets;
-import androidx.core.view.ViewCompat;
-import androidx.core.view.WindowInsetsCompat;
 
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.firestore.FirebaseFirestore;
-import com.google.firebase.storage.FirebaseStorage;
-import com.google.firebase.storage.StorageReference;
 
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.UUID;
 
 public class UploadImage extends AppCompatActivity {
 
-    private EditText Title;
-    private EditText Description;
-    private EditText link;
-    private CheckBox artwork;
-    private CheckBox product;
-    private Button publish;
+    private static final int PICK_IMAGE_REQUEST = 100;
 
-    private Uri imageUri; //to upload local image file to firebase firestore
+    private ImageView image;
+    private EditText titleField, descriptionField, linkField;
+    private CheckBox artworkCheck, productCheck;
+    private Button publishBtn;
+    private ImageButton backButton;
+    private Uri imageUri;
+
     private FirebaseAuth mAuth;
     private FirebaseFirestore db;
-    private StorageReference storageRef;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        EdgeToEdge.enable(this);
-
         setContentView(R.layout.activity_upload_image);
-        Intent intent = new Intent();
-        intent.setType("image/*");
-        intent.setAction(Intent.ACTION_GET_CONTENT);
-        startActivityForResult(Intent.createChooser(intent, "Select Picture"), 100);
 
-        ImageButton backButton = findViewById(R.id.backbutton);
-        backButton.setOnClickListener(v -> {
-
-            Intent intent1 = new Intent(UploadImage.this, UserProfile.class);
-            startActivity(intent1);
-            finish(); //to remove UploadImage
-        });
-        Title = findViewById(R.id.titlefield);
-        Description = findViewById(R.id.description);
-        link = findViewById(R.id.link);
-        artwork = findViewById(R.id.artwork);
-        product = findViewById(R.id.product);
-        publish = findViewById(R.id.publishArtwork);
+        // Match XML IDs
+        image = findViewById(R.id.image);
+        titleField = findViewById(R.id.titlefield);
+        descriptionField = findViewById(R.id.description);
+        linkField = findViewById(R.id.link);
+        artworkCheck = findViewById(R.id.artwork);
+        productCheck = findViewById(R.id.product);
+        publishBtn = findViewById(R.id.publishArtwork);
+        backButton = findViewById(R.id.backbutton);
 
         mAuth = FirebaseAuth.getInstance();
         db = FirebaseFirestore.getInstance();
-        storageRef = FirebaseStorage.getInstance().getReference("uploads");
 
-        ViewCompat.setOnApplyWindowInsetsListener(findViewById(R.id.main), (v, insets) -> {
-            Insets systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars());
-            v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom);
-            return insets;
+        // Back button → finish activity
+        backButton.setOnClickListener(v -> finish());
+
+        // Pick image on ImageView click
+        image.setOnClickListener(v -> openFileChooser());
+
+        // Upload on publish
+        publishBtn.setOnClickListener(v -> {
+            if (imageUri != null) {
+                uploadImageToFirestore();
+            } else {
+                Toast.makeText(this, "Please select an image first", Toast.LENGTH_SHORT).show();
+            }
         });
+    }
 
-        publish.setOnClickListener(v -> uploadImageToFirestore());
+    private void openFileChooser() {
+        Intent intent = new Intent();
+        intent.setType("image/*");
+        intent.setAction(Intent.ACTION_GET_CONTENT);
+        startActivityForResult(intent, PICK_IMAGE_REQUEST);
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+
+        if (requestCode == PICK_IMAGE_REQUEST && resultCode == RESULT_OK
+                && data != null && data.getData() != null) {
+
+            imageUri = data.getData();
+            image.setImageURI(imageUri);
+        }
     }
 
     private void uploadImageToFirestore() {
-        if (imageUri == null) {
-            Toast.makeText(this, "Select an image first", Toast.LENGTH_SHORT).show();
-            return;
-        }
+        try {
+            // Convert image to Bitmap
+            Bitmap bitmap = MediaStore.Images.Media.getBitmap(getContentResolver(), imageUri);
 
-        String userId = mAuth.getCurrentUser().getUid();
-        String titleText = Title.getText().toString().trim();
-        String descriptionText = Description.getText().toString().trim();
-        String linkText = link.getText().toString().trim();
+            // ✅ Step 1: Resize (scale down to max 800x800)
+            int maxWidth = 800;
+            int maxHeight = 800;
+            bitmap = Bitmap.createScaledBitmap(bitmap, maxWidth, maxHeight, true);
 
-        boolean isArtwork = artwork.isChecked();
-        boolean isProduct = product.isChecked();
+            // ✅ Step 2: Compress to JPEG with lower quality (60%)
+            ByteArrayOutputStream baos = new ByteArrayOutputStream();
+            bitmap.compress(Bitmap.CompressFormat.JPEG, 60, baos);
+            byte[] imageBytes = baos.toByteArray();
 
-        ProgressDialog pd = new ProgressDialog(this);
-        pd.setMessage("Uploading...");
-        pd.show();
+            // ✅ Step 3: Convert to Base64 string
+            String base64Image = Base64.encodeToString(imageBytes, Base64.DEFAULT);
 
-        String fileName = UUID.randomUUID().toString() + ".jpg";
-        StorageReference fileRef = storageRef.child(userId + "/" + fileName);
+            // Collect form values
+            String title = titleField.getText().toString().trim();
+            String description = descriptionField.getText().toString().trim();
+            String link = linkField.getText().toString().trim();
+            boolean isArtwork = artworkCheck.isChecked();
+            boolean isProduct = productCheck.isChecked();
 
-        fileRef.putFile(imageUri)
-                .addOnSuccessListener(taskSnapshot ->
-                        fileRef.getDownloadUrl().addOnSuccessListener(downloadUri -> {
-                            // Store metadata in Firestore
-                            Map<String, Object> imageData = new HashMap<>();
-                            imageData.put("title", titleText);
-                            imageData.put("description", descriptionText);
-                            imageData.put("link", linkText);
-                            imageData.put("isArtwork", isArtwork);
-                            imageData.put("isProduct", isProduct);
-                            imageData.put("imageUrl", downloadUri.toString());
-                            imageData.put("timestamp", System.currentTimeMillis());
+            // Save to Firestore
+            String userId = mAuth.getCurrentUser().getUid();
 
-                            db.collection("users")
-                                    .document(userId)
-                                    .collection("images")
-                                    .add(imageData)
-                                    .addOnSuccessListener(documentReference -> {
-                                        pd.dismiss();
-                                        checkImageCount(userId);
-                                        Toast.makeText(this, "Image uploaded", Toast.LENGTH_SHORT).show();
-                                    })
-                                    .addOnFailureListener(e -> {
-                                        pd.dismiss();
-                                        Toast.makeText(this, "Firestore error: " + e.getMessage(), Toast.LENGTH_SHORT).show();
-                                    });
-                        })
-                )
-                .addOnFailureListener(e -> {
-                    pd.dismiss();
-                    Toast.makeText(this, "Storage error: " + e.getMessage(), Toast.LENGTH_SHORT).show();
-                });
-    }
+            Map<String, Object> imageMap = new HashMap<>();
+            imageMap.put("image", base64Image);
+            imageMap.put("title", title);
+            imageMap.put("description", description);
+            imageMap.put("link", link);
+            imageMap.put("isArtwork", isArtwork);
+            imageMap.put("isProduct", isProduct);
+            imageMap.put("timestamp", System.currentTimeMillis());
 
-    private void checkImageCount(String userId) {
-        db.collection("users")
-                .document(userId)
-                .collection("images")
-                .get()
-                .addOnSuccessListener(queryDocumentSnapshots -> {
-                    int count = queryDocumentSnapshots.size();
-                    if (count == 3) {
-                        showVerifiedArtistPopup();
-                    }
-                });
-    }
+            db.collection("users")
+                    .document(userId)
+                    .collection("images")
+                    .add(imageMap)
+                    .addOnSuccessListener(documentReference -> {
+                        Toast.makeText(this, "Image uploaded!", Toast.LENGTH_SHORT).show();
+                        finish();
+                    })
+                    .addOnFailureListener(e ->
+                            Toast.makeText(this, "Upload failed: " + e.getMessage(), Toast.LENGTH_SHORT).show()
+                    );
 
-    private void showVerifiedArtistPopup() {
-        new AlertDialog.Builder(this)
-                .setTitle("Congratulations!")
-                .setMessage("You've uploaded 3 artworks! You're now a verified artist.")
-                .setPositiveButton("OK", (dialog, which) -> dialog.dismiss())
-                .show();
-    }
-
-
-    @Override
-    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-        super.onActivityResult(requestCode, resultCode, data);
-        if (resultCode == RESULT_OK && data != null && data.getData() != null) {
-            imageUri = data.getData();
+        } catch (IOException e) {
+            e.printStackTrace();
+            Toast.makeText(this, "Error processing image", Toast.LENGTH_SHORT).show();
         }
     }
+
 }
+

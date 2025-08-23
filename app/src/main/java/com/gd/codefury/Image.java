@@ -7,19 +7,20 @@ public class Image {
     private String link;
     private String user;
 
+    // Required empty constructor for Firestore
+    public Image() {}
 
-    public Image(String imageUrl, String title, String description, String link,String user) {
+    public Image(String imageUrl, String title, String description, String link, String user) {
         this.imageUrl = imageUrl;
         this.title = title;
         this.description = description;
         this.link = link;
-        this.user=user;
+        this.user = user;
     }
 
     public String getImageUrl() { return imageUrl; }
     public String getTitle() { return title; }
     public String getDescription() { return description; }
     public String getLink() { return link; }
-
-    public String getUser() { return user;}
+    public String getUser() { return user; }
 }

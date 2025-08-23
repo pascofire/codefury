@@ -1,12 +1,11 @@
 package com.gd.codefury;
 
 import android.content.Intent;
-import android.net.Uri;
 import android.os.Bundle;
-import android.widget.EditText;
-import android.widget.ImageButton;
 import android.widget.TextView;
+import android.widget.ImageButton;
 import android.widget.Toast;
+import android.widget.Button;
 
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.graphics.Insets;
@@ -18,8 +17,6 @@ import androidx.recyclerview.widget.StaggeredGridLayoutManager;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.QueryDocumentSnapshot;
-import com.google.firebase.storage.FirebaseStorage;
-import com.google.firebase.storage.StorageReference;
 
 import java.util.ArrayList;
 
@@ -28,13 +25,12 @@ public class UserProfile extends AppCompatActivity {
     private TextView username;
     private ImageButton backButton;
     private RecyclerView imageRecyclerView;
+    private Button upload;
 
     private FirebaseAuth mAuth;
     private FirebaseFirestore db;
-    private StorageReference storageRef;
 
     private ArrayList<Image> imageList;
-
     private ImageAdapter imageAdapter;
 
     @Override
@@ -46,11 +42,11 @@ public class UserProfile extends AppCompatActivity {
         username = findViewById(R.id.username);
         backButton = findViewById(R.id.backbutton_up);
         imageRecyclerView = findViewById(R.id.imageRecyclerView);
+        upload = findViewById(R.id.upload);
 
         // Firebase instances
         mAuth = FirebaseAuth.getInstance();
         db = FirebaseFirestore.getInstance();
-        storageRef = FirebaseStorage.getInstance().getReference("uploads");
 
         // Set padding for system bars
         ViewCompat.setOnApplyWindowInsetsListener(findViewById(R.id.main), (v, insets) -> {
@@ -64,21 +60,27 @@ public class UserProfile extends AppCompatActivity {
             username.setText(mAuth.getCurrentUser().getEmail());
         }
 
-        // Back button functionality
+        // Upload button → open upload screen
+        upload.setOnClickListener(v -> {
+            startActivity(new Intent(UserProfile.this, UploadImage.class));
+            finish();
+        });
+
+        // Back button → return to homepage
         backButton.setOnClickListener(v -> {
             startActivity(new Intent(UserProfile.this, HomePage.class));
             finish();
         });
 
-        // Setup RecyclerView with Staggered Grid
+        // Setup RecyclerView
         imageList = new ArrayList<>();
         imageAdapter = new ImageAdapter(imageList, this);
-
-        StaggeredGridLayoutManager layoutManager = new StaggeredGridLayoutManager(2, StaggeredGridLayoutManager.VERTICAL);
+        StaggeredGridLayoutManager layoutManager =
+                new StaggeredGridLayoutManager(2, StaggeredGridLayoutManager.VERTICAL);
         imageRecyclerView.setLayoutManager(layoutManager);
         imageRecyclerView.setAdapter(imageAdapter);
 
-        // Fetch images from Firestore
+        // Fetch images
         fetchUserImages();
     }
 
@@ -94,7 +96,13 @@ public class UserProfile extends AppCompatActivity {
                 .addOnSuccessListener(queryDocumentSnapshots -> {
                     imageList.clear();
                     for (QueryDocumentSnapshot doc : queryDocumentSnapshots) {
-                        Image item = doc.toObject(Image.class);
+                        Image item = new Image(
+                                doc.getString("imageUrl"),
+                                doc.getString("title"),
+                                doc.getString("description"),
+                                doc.getString("link"),
+                                doc.getString("user")
+                        );
                         imageList.add(item);
                     }
                     imageAdapter.notifyDataSetChanged();
@@ -103,5 +111,4 @@ public class UserProfile extends AppCompatActivity {
                         Toast.makeText(UserProfile.this, "Failed to load images: " + e.getMessage(), Toast.LENGTH_SHORT).show()
                 );
     }
-
 }
